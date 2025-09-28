@@ -35,7 +35,7 @@ export function Hero() {
     { text: "IAS 2025 Prelims Date Announced", url: "https://example.com/prelims-date" },
     { text: "Download UPSC 2025 Notification", url: "https://example.com/upsc-2025-notification" },
     { text: "New Batches Starting Soon", url: "https://example.com/new-batches" },
-    { text: "Join AZAD ICS Academy Today", url: "https://example.com/azad-ics" }
+    { text: "Join SRINIVAS IAS Academy Today", url: "https://example.com/azad-ics" }
   ];
 
   useEffect(() => {
@@ -201,7 +201,7 @@ export function Hero() {
             }}
           >
             <div>Welcome to</div>
-            <div>AZAD ICS ACADEMY</div>
+            <div>SRINIVAS IAS ACADEMY</div>
           </div>
 
           <img

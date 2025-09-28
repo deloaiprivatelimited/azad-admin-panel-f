@@ -118,7 +118,7 @@ export function Header({ onMaterialSelect }: HeaderProps) {
               onClick={handleLogoClick}
               className="text-xl font-bold text-[#FF5722]  transition-colors cursor-pointer"
             >
-              AZAD ICS ACADEMY
+              SRINIVAS IAS ACADEMY
             </button>
           </div>
 

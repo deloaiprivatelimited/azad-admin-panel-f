@@ -95,7 +95,7 @@ export function Hero() {
       <div className="relative z-10 max-w-3xl mx-auto mt-10">
         <h1 className="text-5xl font-bold text-white mb-6">WELCOME</h1>
         <h1 className="text-5xl font-bold text-white mb-6">TO</h1>
-        <h1 className="text-5xl font-bold text-white mb-6">AZAD ICS ACADEMY</h1>
+        <h1 className="text-5xl font-bold text-white mb-6">SRINIVAS IAS ACADEMY</h1>
         <p className="text-xl text-gray-200">
           Civil Services Examination is the most coveted Examination in the country, which gives you the golden opportunity to be a part of the team driving the nation.
         </p>

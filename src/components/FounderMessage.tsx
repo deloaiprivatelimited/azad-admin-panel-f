@@ -15,7 +15,7 @@ export function FounderMessage() {
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">Founder's Message</h2>
             <p className="text-lg text-gray-700 leading-relaxed">
-              To solve these difficulties, to break myths of the civils services examination and to provide quality coaching and best coaching, I established 'AZAD ICS ACADEMY' in the name of Shaheed 'Chandreshekhar Azad', a revolutionary who sacrificed his life for India. Our aim is to make people of India and Karnataka synonymous to IAS/KAS and other civil Services.
+              To solve these difficulties, to break myths of the civils services examination and to provide quality coaching and best coaching, I established 'SRINIVAS IAS ACADEMY' in the name of Shaheed 'Chandreshekhar Azad', a revolutionary who sacrificed his life for India. Our aim is to make people of India and Karnataka synonymous to IAS/KAS and other civil Services.
             </p>
           </div>
         </div>
