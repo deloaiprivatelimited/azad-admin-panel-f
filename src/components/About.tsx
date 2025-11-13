@@ -19,7 +19,7 @@ export function About() {
             <h2 className="text-5xl font-extrabold text-[#FF5722] mb-6 tracking-tight">
               About Us
             </h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
+            <p className="text-lg text-gray-700 leading-relaxed text-justify">
               The Civil Services Examination is the most prestigious examination in India,
               offering a golden opportunity to contribute to nation-building. It demands
               precision, focus, analytical thinking, and the ability to make balanced decisions

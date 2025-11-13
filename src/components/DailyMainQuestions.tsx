@@ -1,309 +1,241 @@
-import React, { useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Clock, BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, HelpCircle, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface Question {
-  id: number;
+interface DMQItem {
+  id: string;
+  date_time: string;
+  category: string;
   question: string;
-  marks: number;
-  timeLimit: string;
-  subject: string;
+  answer: string;
 }
 
-interface DailyQuestions {
-  date: string;
-  questions: Question[];
-}
+const API_BASE_URL = 'https://api.srinivasiasacademy.in/dmq';
 
-// Sample data - in real application, this would come from an API
-const questionsData: DailyQuestions[] = [
-  {
-    date: '2024-03-15',
-    questions: [
-      {
-        id: 1,
-        question: 'Discuss the role of the Election Commission of India in ensuring free and fair elections. Analyze the challenges faced by the Election Commission in the digital age.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Polity'
-      },
-      {
-        id: 2,
-        question: 'Examine the impact of climate change on monsoon patterns in India. Suggest measures to adapt to changing precipitation patterns.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Geography'
-      },
-      {
-        id: 3,
-        question: 'Analyze the significance of the Goods and Services Tax (GST) in India\'s federal structure. Discuss its impact on center-state relations.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Economy'
-      },
-      {
-        id: 4,
-        question: 'Evaluate the role of women in India\'s freedom struggle. How did their participation shape the nature of the independence movement?',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Modern History'
-      },
-      {
-        id: 5,
-        question: 'Discuss the ethical implications of artificial intelligence in governance. How can India ensure responsible AI deployment in public administration?',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Ethics'
-      }
-    ]
-  },
-  {
-    date: '2024-03-14',
-    questions: [
-      {
-        id: 1,
-        question: 'Analyze the concept of cooperative federalism in India. How has it evolved since independence?',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Polity'
-      },
-      {
-        id: 2,
-        question: 'Examine the causes and consequences of urban heat islands in Indian cities. Suggest mitigation strategies.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Geography'
-      },
-      {
-        id: 3,
-        question: 'Discuss the role of microfinance institutions in financial inclusion. Analyze their impact on rural development.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Economy'
-      },
-      {
-        id: 4,
-        question: 'Evaluate the impact of the Partition of Bengal (1905) on the Indian national movement.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Modern History'
-      },
-      {
-        id: 5,
-        question: 'Analyze the ethical challenges in medical research involving human subjects. Discuss the importance of informed consent.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Ethics'
-      }
-    ]
-  },
-  {
-    date: '2024-03-13',
-    questions: [
-      {
-        id: 1,
-        question: 'Discuss the powers and functions of the Comptroller and Auditor General of India. Analyze its role in ensuring financial accountability.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Polity'
-      },
-      {
-        id: 2,
-        question: 'Examine the phenomenon of coral bleaching and its impact on marine ecosystems. Discuss conservation strategies.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Environment'
-      },
-      {
-        id: 3,
-        question: 'Analyze the challenges and opportunities of India\'s demographic dividend. How can it be effectively harnessed?',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Economy'
-      },
-      {
-        id: 4,
-        question: 'Evaluate the role of the Indian National Army (INA) in India\'s struggle for independence.',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Modern History'
-      },
-      {
-        id: 5,
-        question: 'Discuss the ethical dimensions of whistleblowing in public administration. When is it justified?',
-        marks: 15,
-        timeLimit: '22 minutes',
-        subject: 'Ethics'
-      }
-    ]
-  }
-];
+export default function DMQUserPage() {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [items, setItems] = useState<DMQItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [visibleAnswers, setVisibleAnswers] = useState<Set<string>>(new Set());
 
-export function DailyMainQuestions() {
-  const [selectedDate, setSelectedDate] = useState('2024-03-15');
-  
-  const currentQuestions = questionsData.find(data => data.date === selectedDate);
-  
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
+  useEffect(() => {
+    fetchItemsByDate(selectedDate);
+  }, [selectedDate]);
 
-  const navigateDate = (direction: 'prev' | 'next') => {
-    const currentIndex = questionsData.findIndex(data => data.date === selectedDate);
-    if (direction === 'prev' && currentIndex > 0) {
-      setSelectedDate(questionsData[currentIndex - 1].date);
-    } else if (direction === 'next' && currentIndex < questionsData.length - 1) {
-      setSelectedDate(questionsData[currentIndex + 1].date);
+  const fetchItemsByDate = async (date: string) => {
+    setIsLoading(true);
+    setVisibleAnswers(new Set());
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/items/by_date?date=${date}`);
+      const data = await response.json();
+      setItems(data.items || []);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const getSubjectColor = (subject: string) => {
-    const colors: { [key: string]: string } = {
-      'Polity': 'bg-blue-100 text-blue-800',
-      'Geography': 'bg-green-100 text-green-800',
-      'Economy': 'bg-purple-100 text-purple-800',
-      'Modern History': 'bg-orange-100 text-orange-800',
-      'Ethics': 'bg-red-100 text-red-800',
-      'Environment': 'bg-teal-100 text-teal-800'
-    };
-    return colors[subject] || 'bg-gray-100 text-gray-800';
+  const toggleAnswer = (id: string) => {
+    setVisibleAnswers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
   };
 
+  const changeDate = (direction: 'prev' | 'next') => {
+    const current = new Date(selectedDate);
+    if (direction === 'prev') {
+      current.setDate(current.getDate() - 1);
+    } else {
+      current.setDate(current.getDate() + 1);
+    }
+    setSelectedDate(current.toISOString().split('T')[0]);
+  };
+
+  const goToToday = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        {/* Header Section */}
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-50">
+      <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Daily Main Questions</h1>
-          <p className="text-xl text-gray-600">
-            Practice with 5 carefully curated main exam questions every day
-          </p>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet-100 mb-4">
+            <HelpCircle size={32} className="text-violet-600" />
+          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">Daily MCQ</h1>
+          <p className="text-lg text-slate-600">Practice questions for your exam preparation</p>
         </div>
 
-        {/* Date Navigation */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+              <Calendar size={20} className="text-violet-600" />
+              Select Date
+            </h2>
+            {!isToday && (
+              <button
+                onClick={goToToday}
+                className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+              >
+                Go to Today
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
             <button
-              onClick={() => navigateDate('prev')}
-              className="flex items-center px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-              disabled={questionsData.findIndex(data => data.date === selectedDate) === 0}
+              onClick={() => changeDate('prev')}
+              className="p-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
+              title="Previous day"
             >
-              <ChevronLeft className="w-5 h-5 mr-1" />
-              Previous Day
+              <ChevronLeft size={20} className="text-slate-600" />
             </button>
-            
-            <div className="flex items-center space-x-3">
-              <Calendar className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-900">
-                {formatDate(selectedDate)}
-              </h2>
-            </div>
-            
+
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all text-center font-medium text-slate-900"
+            />
+
             <button
-              onClick={() => navigateDate('next')}
-              className="flex items-center px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
-              disabled={questionsData.findIndex(data => data.date === selectedDate) === questionsData.length - 1}
+              onClick={() => changeDate('next')}
+              className="p-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
+              title="Next day"
             >
-              Next Day
-              <ChevronRight className="w-5 h-5 ml-1" />
+              <ChevronRight size={20} className="text-slate-600" />
             </button>
+          </div>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-slate-600">{formatDate(selectedDate)}</p>
           </div>
         </div>
 
-        {/* Questions Section */}
-        {currentQuestions ? (
+        {isLoading ? (
+          <div className="text-center py-16">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-violet-200 border-t-violet-600"></div>
+            <p className="mt-4 text-slate-600">Loading questions...</p>
+          </div>
+        ) : items.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+              <HelpCircle size={32} className="text-slate-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">No Questions Available</h3>
+            <p className="text-slate-600">
+              There are no MCQ questions for {formatDate(selectedDate)}.
+            </p>
+            <p className="text-sm text-slate-500 mt-2">Try selecting a different date.</p>
+          </div>
+        ) : (
           <div className="space-y-6">
-            {currentQuestions.questions.map((question, index) => (
-              <div key={question.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                {/* Question Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
-                      {index + 1}
-                    </div>
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSubjectColor(question.subject)}`}>
-                      {question.subject}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      <span>{question.marks} marks</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      <span>{question.timeLimit}</span>
+            <div className="text-center mb-6">
+              <p className="text-lg font-semibold text-slate-900">
+                {items.length} {items.length === 1 ? 'Question' : 'Questions'} for {formatDate(selectedDate)}
+              </p>
+            </div>
+
+            {items.map((item, index) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-xl transition-shadow"
+              >
+                <div className="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-20 text-white font-bold">
+                        {index + 1}
+                      </div>
+                      <span className="text-sm font-medium text-violet-100">
+                        {item.category}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Question Text */}
-                <div className="mb-4">
-                  <p className="text-lg text-gray-800 leading-relaxed">
-                    {question.question}
-                  </p>
-                </div>
+                <div className="p-6">
+                  <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-slate-500 mb-2">QUESTION</h3>
+                    <p className="text-lg text-slate-900 leading-relaxed">
+                      {item.question}
+                    </p>
+                  </div>
 
-                {/* Action Buttons */}
-                <div className="flex space-x-3">
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    Start Writing
-                  </button>
-                  <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    View Sample Answer
-                  </button>
-                  <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    Save for Later
-                  </button>
+                  <div className="border-t border-slate-200 pt-6">
+                    <button
+                      onClick={() => toggleAnswer(item.id)}
+                      className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                        visibleAnswers.has(item.id)
+                          ? 'bg-violet-100 text-violet-700 hover:bg-violet-200'
+                          : 'bg-violet-600 text-white hover:bg-violet-700'
+                      }`}
+                    >
+                      {visibleAnswers.has(item.id) ? (
+                        <>
+                          <EyeOff size={20} />
+                          Hide Answer
+                        </>
+                      ) : (
+                        <>
+                          <Eye size={20} />
+                          View Answer
+                        </>
+                      )}
+                    </button>
+
+                    {visibleAnswers.has(item.id) && (
+                      <div className="mt-4 p-4 bg-green-50 border-2 border-green-200 rounded-lg animate-fadeIn">
+                        <h3 className="text-sm font-semibold text-green-800 mb-2">ANSWER</h3>
+                        <p className="text-base text-green-900 leading-relaxed">
+                          {item.answer}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-xl text-gray-600">No questions available for this date.</p>
-          </div>
         )}
-
-        {/* Statistics Section */}
-        <div className="mt-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-8 text-white">
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold mb-2">5</div>
-              <div className="text-blue-100">Questions per Day</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">75</div>
-              <div className="text-blue-100">Total Marks</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">110</div>
-              <div className="text-blue-100">Minutes</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">365</div>
-              <div className="text-blue-100">Days Coverage</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tips Section */}
-        <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-3">💡 Daily Practice Tips</h3>
-          <ul className="space-y-2 text-yellow-700">
-            <li>• Set aside 2 hours daily for these 5 questions</li>
-            <li>• Practice writing within the time limit to improve speed</li>
-            <li>• Focus on structure: Introduction, Body, and Conclusion</li>
-            <li>• Review sample answers to understand expected quality</li>
-            <li>• Track your progress and identify weak areas</li>
-          </ul>
-        </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

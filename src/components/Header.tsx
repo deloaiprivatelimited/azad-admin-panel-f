@@ -8,17 +8,19 @@ interface HeaderProps {
 export function Header({ onMaterialSelect }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
+  // Mobile submenu expanded states
+  const [expandedLanguage, setExpandedLanguage] = useState<string | null>(null);
+  const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
+
   const navigation = [
-    { name: 'Home', href: '#' },
     { name: 'About Us', href: '#about' },
     { name: 'Courses', href: '/courses' },
     { name: 'Daily Main Questions', href: '/daily-questions' },
     { name: 'PYQ', href: '/pyq' },
     { name: 'Current Affairs', href: '/current-affairs' },
-    { name: 'Blog', href: '/blog' }
+    { name: 'Contact', href: '/contact' }
   ];
 
   const upscSubjects = [
@@ -79,7 +81,6 @@ export function Header({ onMaterialSelect }: HeaderProps) {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-      setActiveSubMenu(null);
     }, 300);
   };
 
@@ -87,12 +88,12 @@ export function Header({ onMaterialSelect }: HeaderProps) {
     e.preventDefault();
     const href = e.currentTarget.getAttribute('href');
     if (!href) return;
-    
+
     if (href.startsWith('/')) {
       window.location.href = href;
       return;
     }
-    
+
     const element = href === '#' ? document.body : document.querySelector(href);
     if (!element) return;
 
@@ -107,6 +108,9 @@ export function Header({ onMaterialSelect }: HeaderProps) {
   const handleSubjectClick = (language: string, course: string, subject: string) => {
     onMaterialSelect({ language, course, subject });
     setIsMenuOpen(false);
+    // Close expanded menus on mobile after selection
+    setExpandedLanguage(null);
+    setExpandedCourse(null);
   };
 
   return (
@@ -114,9 +118,9 @@ export function Header({ onMaterialSelect }: HeaderProps) {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <button 
+            <button
               onClick={handleLogoClick}
-              className="text-xl font-bold text-[#FF5722]  transition-colors cursor-pointer"
+              className="text-xl font-bold text-[#FF5722] transition-colors cursor-pointer"
             >
               SRINIVAS IAS ACADEMY
             </button>
@@ -126,7 +130,7 @@ export function Header({ onMaterialSelect }: HeaderProps) {
           <div className="hidden md:flex items-center space-x-8">
             {/* Study Material Dropdown */}
             <div className="relative group">
-              <button 
+              <button
                 className="flex items-center text-gray-700 hover:text-blue-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 onMouseEnter={() => handleMouseEnter('study')}
                 onMouseLeave={handleMouseLeave}
@@ -134,57 +138,63 @@ export function Header({ onMaterialSelect }: HeaderProps) {
                 Study Material
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
-              
+
               {/* First Level Dropdown */}
-              <div 
-                className={`absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg ${activeDropdown === 'study' ? 'block' : 'hidden'}`}
+              <div
+                className={`absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg ${
+                  activeDropdown === 'study' ? 'block' : 'hidden'
+                }`}
                 onMouseEnter={() => handleMouseEnter('study')}
                 onMouseLeave={handleMouseLeave}
               >
                 {Object.keys(studyMaterials).map((language) => (
-                  <div 
-                    key={language} 
+                  <div
+                    key={language}
                     className="relative group/sub px-4 py-2 hover:bg-gray-100"
-                    onMouseEnter={() => setActiveSubMenu(language)}
+                    onMouseEnter={() => setActiveDropdown('study')} // keep open on hover
+                    onMouseLeave={handleMouseLeave}
                   >
                     <div className="flex items-center justify-between">
                       <span>{language}</span>
                       <ChevronDown className="h-4 w-4" />
                     </div>
-                    
+
                     {/* Second Level Dropdown (Courses) */}
                     <div className="absolute left-full top-0 w-56 bg-white rounded-md shadow-lg hidden group-hover/sub:block">
-                      {studyMaterials[language as keyof typeof studyMaterials].map((course) => (
-                        <div 
-                          key={`${language}-${course}`}
-                          className="relative group/course px-4 py-2 hover:bg-gray-100"
-                          onMouseEnter={() => setActiveSubMenu(course)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span>{course}</span>
-                            {courseSubjects[course as keyof typeof courseSubjects].length > 0 && (
-                              <ChevronDown className="h-4 w-4" />
+                      {studyMaterials[language as keyof typeof studyMaterials].map(
+                        (course) => (
+                          <div
+                            key={`${language}-${course}`}
+                            className="relative group/course px-4 py-2 hover:bg-gray-100"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span>{course}</span>
+                              {courseSubjects[course as keyof typeof courseSubjects]
+                                .length > 0 && <ChevronDown className="h-4 w-4" />}
+                            </div>
+
+                            {/* Third Level Dropdown (Subjects) */}
+                            {courseSubjects[course as keyof typeof courseSubjects].length >
+                              0 && (
+                              <div className="absolute left-full top-0 w-72 bg-white rounded-md shadow-lg hidden group-hover/course:block">
+                                {courseSubjects[
+                                  course as keyof typeof courseSubjects
+                                ].map((subject) => (
+                                  <button
+                                    key={`${language}-${course}-${subject}`}
+                                    onClick={() =>
+                                      handleSubjectClick(language, course, subject)
+                                    }
+                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                  >
+                                    {subject}
+                                  </button>
+                                ))}
+                              </div>
                             )}
                           </div>
-                          
-                          {/* Third Level Dropdown (Subjects) */}
-                          {courseSubjects[course as keyof typeof courseSubjects].length > 0 && (
-                            <div 
-                              className={`absolute left-full top-0 w-72 bg-white rounded-md shadow-lg hidden group-hover/course:block`}
-                            >
-                              {courseSubjects[course as keyof typeof courseSubjects].map((subject) => (
-                                <button
-                                  key={`${language}-${course}-${subject}`}
-                                  onClick={() => handleSubjectClick(language, course, subject)}
-                                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                  {subject}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   </div>
                 ))}
@@ -209,46 +219,78 @@ export function Header({ onMaterialSelect }: HeaderProps) {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-gray-700 hover:text-blue-900"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="pt-2 pb-3 space-y-1">
+          <div
+            className="md:hidden"
+            style={{ maxHeight: 'calc(100vh - 64px)', overflowY: 'auto' }}
+          >
+            <div className="pt-2 pb-3 space-y-1 px-3">
               {/* Mobile Study Material Menu */}
-              <div className="px-3 py-2">
-                <span className="block text-base font-medium text-gray-700">Study Material</span>
-                {Object.entries(studyMaterials).map(([language, courses]) => (
-                  <div key={language} className="ml-4 mt-2">
-                    <span className="block text-sm font-medium text-gray-600">{language}</span>
+              <span className="block text-base font-medium text-gray-700">Study Material</span>
+              {Object.entries(studyMaterials).map(([language, courses]) => (
+                <div key={language} className="mt-2">
+                  <button
+                    onClick={() =>
+                      setExpandedLanguage(expandedLanguage === language ? null : language)
+                    }
+                    className="block w-full text-left text-sm font-medium text-gray-600 py-1 flex justify-between items-center"
+                  >
+                    {language}
+                    <ChevronDown
+                      className={`h-4 w-4 transform transition-transform duration-200 ${
+                        expandedLanguage === language ? 'rotate-180' : 'rotate-0'
+                      }`}
+                    />
+                  </button>
+                  {expandedLanguage === language && (
                     <div className="ml-4 mt-1 space-y-1">
                       {courses.map((course) => (
-                        <div key={`${language}-${course}`} className="py-1">
-                          <span className="block text-sm text-gray-600">{course}</span>
-                          <div className="ml-4 mt-1 space-y-1">
-                            {courseSubjects[course as keyof typeof courseSubjects].map((subject) => (
-                              <button
-                                key={`${language}-${course}-${subject}`}
-                                onClick={() => handleSubjectClick(language, course, subject)}
-                                className="block w-full text-left text-sm text-gray-500 hover:text-blue-900 py-1"
-                              >
-                                {subject}
-                              </button>
-                            ))}
-                          </div>
+                        <div key={`${language}-${course}`} className="">
+                          <button
+                            onClick={() =>
+                              setExpandedCourse(expandedCourse === course ? null : course)
+                            }
+                            className="block w-full text-left text-sm text-gray-600 py-1 flex justify-between items-center"
+                          >
+                            {course}
+                            {courseSubjects[course as keyof typeof courseSubjects].length >
+                            0 ? (
+                              <ChevronDown
+                                className={`h-4 w-4 transform transition-transform duration-200 ${
+                                  expandedCourse === course ? 'rotate-180' : 'rotate-0'
+                                }`}
+                              />
+                            ) : null}
+                          </button>
+                          {expandedCourse === course && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {courseSubjects[course as keyof typeof courseSubjects].map(
+                                (subject) => (
+                                  <button
+                                    key={`${language}-${course}-${subject}`}
+                                    onClick={() =>
+                                      handleSubjectClick(language, course, subject)
+                                    }
+                                    className="block w-full text-left text-sm text-gray-500 hover:text-blue-900 py-1"
+                                  >
+                                    {subject}
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )}
+                </div>
+              ))}
 
               {navigation.map((item) => (
                 <a

@@ -13,17 +13,19 @@ const TopperScrollSection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://backend.azad.deloai.com/toppers')
+    fetch('https://api.srinivasiasacademy.in/ranking/items')
       .then((res) => res.json())
       .then((data) => {
-        if (data.toppers) {
-          setToppers(data.toppers);
+        if (data.items) {
+          setToppers(data.items);
         }
       })
-      .catch((err) => console.error('Error fetching toppers:', err))
-      .finally(() => setLoading(false)); // ✅ stop loading after fetch
+      .catch((err) => {
+        console.error('Error fetching toppers:', err);
+        // Optionally set an error state here if you want to show error UI
+      })
+      .finally(() => setLoading(false));
   }, []);
-
   return (
     <div style={{ flex: '0 0 60%', paddingLeft: '20px', position: 'relative' }}>
       <h2
