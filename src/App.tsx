@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
-import { FacultyShowcase } from "./components/FacultyShowcase";
+import { FacultyShowcase } from "./components/Testimonials";
 import { About } from "./components/About";
 import { AboutIAS } from "./components/AboutIAS";
 import { Myths } from "./components/Myths";

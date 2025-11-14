@@ -82,14 +82,14 @@ export function Testimonial() {
         <Slider {...settings} className="gap-4">
           {testimonials.map((item) => (
             <div key={item.id} className="px-2">
-              <div className="bg-white dark:bg-gray-800 shadow-xl rounded-none p-6 flex flex-col items-center text-center hover:scale-105 h-full transition-transform">
+              <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center hover:scale-105 h-full transition-transform">
 
                 {/* IMAGE (Rectangle, NOT ROUND) */}
                 {item.image ? (
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full h-40 object-cover rounded-none mb-4"
+                    className="w-full h-40 object-cover rounded-xl mb-4"
                   />
                 ) : (
                   <div className="w-full h-40 rounded-xl bg-gray-300 flex items-center justify-center text-gray-900 text-xl font-bold mb-4">
