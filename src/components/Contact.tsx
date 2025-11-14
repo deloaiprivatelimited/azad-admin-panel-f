@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Send } from "lucide-react";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -8,6 +9,21 @@ export function Contact() {
     phone: '',
     message: ''
   });
+
+  const [social, setSocial] = useState({
+    facebook: "",
+    instagram: "",
+    telegram: "",
+    youtube: ""
+  });
+
+  // Fetch Social Media Links (same API as Footer)
+  useEffect(() => {
+    fetch("http://localhost:5000/api/footer/footer-settings")
+      .then((res) => res.json())
+      .then((data) => setSocial(data))
+      .catch((err) => console.error("Error loading social links:", err));
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,24 +67,28 @@ export function Contact() {
         Contact Us
       </h1>
 
-      {/* Top row: Address and Map side by side */}
+      {/* Top row: Address and Map */}
       <div className="top-row" style={{ display: 'flex', gap: '40px', marginBottom: '40px' }}>
+        
+        {/* ADDRESS SECTION */}
         <div
           className="address-section"
           style={{
             flex: '1 1 50%',
             backgroundColor: '#f5f5f5',
             padding: '30px',
-            borderRadius: '12px',
-            marginBottom: 0
+            borderRadius: '12px'
           }}
         >
           <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '20px' }}>
             Get In Touch
           </h2>
-          <div className="info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+
+          <div className="info-grid" style={{ display: 'grid', gap: '20px' }}>
+            
+            {/* Address */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-              <MapPin style={{ color: '#FF5722', flexShrink: 0, marginTop: '4px' }} size={24} />
+              <MapPin style={{ color: '#FF5722', marginTop: '4px' }} size={24} />
               <div>
                 <h3 style={{ fontWeight: 'bold', marginBottom: '5px' }}>Address</h3>
                 <p style={{ color: '#666', lineHeight: '1.6' }}>
@@ -81,8 +101,9 @@ export function Contact() {
               </div>
             </div>
 
+            {/* Phone */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-              <Phone style={{ color: '#FF5722', flexShrink: 0, marginTop: '4px' }} size={24} />
+              <Phone style={{ color: '#FF5722', marginTop: '4px' }} size={24} />
               <div>
                 <h3 style={{ fontWeight: 'bold', marginBottom: '5px' }}>Phone</h3>
                 <p style={{ color: '#666' }}>+91 8861226868</p>
@@ -90,23 +111,56 @@ export function Contact() {
               </div>
             </div>
 
+            {/* Email */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '15px' }}>
-              <Mail style={{ color: '#FF5722', flexShrink: 0, marginTop: '4px' }} size={24} />
+              <Mail style={{ color: '#FF5722', marginTop: '4px' }} size={24} />
               <div>
                 <h3 style={{ fontWeight: 'bold', marginBottom: '5px' }}>Email</h3>
                 <p style={{ color: '#666' }}>azadsrinivas000@gmail.com</p>
               </div>
             </div>
 
-          
+            {/* SOCIAL MEDIA SECTION */}
+            <div style={{ marginTop: "10px" }}>
+              <h3 style={{ fontWeight: "bold", marginBottom: "10px" }}>Follow Us</h3>
+
+              <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+
+                {social.facebook && (
+                  <a href={social.facebook} target="_blank" rel="noopener noreferrer">
+                    <Facebook size={26} style={{ color: "#FF5722" }} />
+                  </a>
+                )}
+
+                {social.instagram && (
+                  <a href={social.instagram} target="_blank" rel="noopener noreferrer">
+                    <Instagram size={26} style={{ color: "#FF5722" }} />
+                  </a>
+                )}
+
+                {social.telegram && (
+                  <a href={social.telegram} target="_blank" rel="noopener noreferrer">
+                    <Send size={26} style={{ color: "#FF5722" }} />
+                  </a>
+                )}
+
+                {social.youtube && (
+                  <a href={social.youtube} target="_blank" rel="noopener noreferrer">
+                    <Youtube size={26} style={{ color: "#FF5722" }} />
+                  </a>
+                )}
+
+              </div>
+            </div>
+
           </div>
         </div>
 
+        {/* MAP SECTION */}
         <div
           className="map-section"
           style={{
             flex: '1 1 50%',
-            width: '100%',
             height: '400px',
             borderRadius: '12px',
             overflow: 'hidden',
@@ -118,15 +172,13 @@ export function Contact() {
             width="100%"
             height="100%"
             style={{ border: 0 }}
-            allowFullScreen
             loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
             title="SRINIVAS IAS Academy Location"
           />
         </div>
       </div>
 
-      {/* Form below both */}
+      {/* FORM SECTION */}
       <div
         className="form-section"
         style={{
@@ -141,11 +193,10 @@ export function Contact() {
         </h2>
 
         <form onSubmit={handleSubmit}>
+          
+          {/* Name */}
           <div style={{ marginBottom: '20px' }}>
-            <label
-              htmlFor="name"
-              style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}
-            >
+            <label htmlFor="name" style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
               Full Name *
             </label>
             <input
@@ -159,21 +210,14 @@ export function Contact() {
                 width: '100%',
                 padding: '12px',
                 border: '2px solid #e0e0e0',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.3s'
+                borderRadius: '8px'
               }}
-              onFocus={(e) => (e.target.style.borderColor = '#FF5722')}
-              onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
             />
           </div>
 
+          {/* Email */}
           <div style={{ marginBottom: '20px' }}>
-            <label
-              htmlFor="email"
-              style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}
-            >
+            <label htmlFor="email" style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
               Email Address *
             </label>
             <input
@@ -187,21 +231,14 @@ export function Contact() {
                 width: '100%',
                 padding: '12px',
                 border: '2px solid #e0e0e0',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.3s'
+                borderRadius: '8px'
               }}
-              onFocus={(e) => (e.target.style.borderColor = '#FF5722')}
-              onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
             />
           </div>
 
+          {/* Phone */}
           <div style={{ marginBottom: '20px' }}>
-            <label
-              htmlFor="phone"
-              style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}
-            >
+            <label htmlFor="phone" style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
               Phone Number *
             </label>
             <input
@@ -215,21 +252,14 @@ export function Contact() {
                 width: '100%',
                 padding: '12px',
                 border: '2px solid #e0e0e0',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.3s'
+                borderRadius: '8px'
               }}
-              onFocus={(e) => (e.target.style.borderColor = '#FF5722')}
-              onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
             />
           </div>
 
+          {/* Message */}
           <div style={{ marginBottom: '20px' }}>
-            <label
-              htmlFor="message"
-              style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}
-            >
+            <label htmlFor="message" style={{ fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
               Message *
             </label>
             <textarea
@@ -243,17 +273,12 @@ export function Contact() {
                 width: '100%',
                 padding: '12px',
                 border: '2px solid #e0e0e0',
-                borderRadius: '8px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.3s',
-                resize: 'vertical'
+                borderRadius: '8px'
               }}
-              onFocus={(e) => (e.target.style.borderColor = '#FF5722')}
-              onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
             />
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             style={{
@@ -265,19 +290,14 @@ export function Contact() {
               borderRadius: '8px',
               fontSize: '18px',
               fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s'
+              cursor: 'pointer'
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E64A19')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FF5722')}
           >
             Send Message
           </button>
         </form>
       </div>
-      
-    </div>
 
-    
+    </div>
   );
 }

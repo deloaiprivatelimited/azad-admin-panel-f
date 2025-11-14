@@ -29,6 +29,14 @@ type SelectedMaterial = {
   subject: string;
 } | null;
 
+type TestimonialItem = {
+  id: number;
+  name: string;
+  message: string;
+  role?: string;
+  image?: string;
+};
+
 /* ----------------- MAIN APP WRAPPER ----------------- */
 export default function App() {
   return (
@@ -43,75 +51,12 @@ function AppRoutes() {
   const [selectedMaterial, setSelectedMaterial] = useState<SelectedMaterial>(null);
   const [facultyList, setFacultyList] = useState<any[]>([]);
   const [toppersList, setToppersList] = useState<any[]>([]);
-  const [testimonialsList, setTestimonialsList] = useState<any[]>([]);
+  const [testimonialsList, setTestimonialsList] = useState<TestimonialItem[]>([]);
+  const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
   const navigate = useNavigate();
-const dummyTestimonials = [
-  {
-    id: 1,
-    name: "Ananya Sharma",
-    role: "UPSC Aspirant",
-    message: "This institute helped me clear my concepts and improve my confidence!",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 2,
-    name: "Rohit Verma",
-    role: "Civil Services Aspirant",
-    message: "The faculty are extremely knowledgeable and approachable.",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 3,
-    name: "Priya Singh",
-    role: "Student",
-    message: "Amazing guidance and study material that made learning easier.",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 4,
-    name: "Vikram Joshi",
-    role: "IAS Aspirant",
-    message: "I improved my answer writing skills tremendously thanks to the mentors!",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 5,
-    name: "Neha Gupta",
-    role: "UPSC Candidate",
-    message: "Interactive sessions and practical examples made learning fun and easy.",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 6,
-    name: "Siddharth Rao",
-    role: "Civil Services Aspirant",
-    message: "The study material provided was clear, concise, and very helpful.",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 7,
-    name: "Riya Mehta",
-    role: "Student",
-    message: "Highly recommended! The mentors are patient and approachable.",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 8,
-    name: "Aman Verma",
-    role: "IAS Aspirant",
-    message: "I gained confidence and clarity in my preparation through their guidance.",
-    image: "https://via.placeholder.com/150",
-  },
-];
-
-
-useEffect(() => {
-  setTestimonialsList(dummyTestimonials);
-}, []);
 
   /* ----------------- DUMMY FACULTY ----------------- */
-
   const dummyFaculty = [
     {
       name: "Dr. Ramesh Verma",
@@ -156,12 +101,14 @@ useEffect(() => {
 
   /* ----------------- FETCH TESTIMONIALS ----------------- */
   useEffect(() => {
-    fetch("https://backend.azad.deloai.com/testimonials")
+    setLoadingTestimonials(true);
+    fetch("http://localhost:5000/testimonials")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setTestimonialsList(data);
       })
-      .catch((err) => console.error("Error fetching testimonials:", err));
+      .catch((err) => console.error("Error fetching testimonials:", err))
+      .finally(() => setLoadingTestimonials(false));
   }, []);
 
   /* ----------------- AUTO NAVIGATE ON STUDY MATERIAL SELECT ----------------- */
@@ -210,7 +157,13 @@ useEffect(() => {
                   </section>
 
                   <section id="testimonials">
-                    <Testimonial testimonials={testimonialsList} />
+                    {loadingTestimonials ? (
+                      <p className="text-center py-10 text-gray-500 dark:text-gray-400">
+                        Loading testimonials...
+                      </p>
+                    ) : (
+                      <Testimonial testimonials={testimonialsList} />
+                    )}
                   </section>
 
                   <section id="founder">

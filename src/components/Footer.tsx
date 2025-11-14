@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Facebook, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube, Send } from "lucide-react"; // Using Send as Telegram icon
 
 interface SocialLinks {
   facebook?: string;
   instagram?: string;
-  twitter?: string;
-  linkedin?: string;
+  telegram?: string;
   youtube?: string;
 }
 
@@ -13,7 +12,7 @@ export function Footer() {
   const [social, setSocial] = useState<SocialLinks>({});
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/footer/footer-settings")  // ✅ Correct URL
+    fetch("http://localhost:5000/api/footer/footer-settings")
       .then((res) => res.json())
       .then((data) => setSocial(data))
       .catch((err) => console.error("Error loading footer settings:", err));
@@ -41,14 +40,9 @@ export function Footer() {
               <Instagram className="w-6 h-6 hover:text-pink-400" />
             </a>
           )}
-          {social.twitter && (
-            <a href={social.twitter} target="_blank" rel="noopener noreferrer">
-              <Twitter className="w-6 h-6 hover:text-blue-300" />
-            </a>
-          )}
-          {social.linkedin && (
-            <a href={social.linkedin} target="_blank" rel="noopener noreferrer">
-              <Linkedin className="w-6 h-6 hover:text-blue-500" />
+          {social.telegram && (
+            <a href={social.telegram} target="_blank" rel="noopener noreferrer">
+              <Send className="w-6 h-6 hover:text-blue-400" />
             </a>
           )}
           {social.youtube && (

@@ -17,6 +17,7 @@ export function Header({ onMaterialSelect }: HeaderProps) {
   const navigation = [
     { name: 'About Us', href: '#about' },
     { name: 'Courses', href: '/courses' },
+{ name: 'Books', href: '/books' },
     { name: 'Daily Main Questions', href: '/daily-questions' },
     { name: 'PYQ', href: '/pyq' },
     { name: 'Current Affairs', href: '/current-affairs' },
