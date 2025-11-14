@@ -38,9 +38,14 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
   const [total, setTotal] = useState(0);
   const perPage = 20;
 
+  // ✅ Normalize language at top (correct place)
+  const normalizedLanguage =
+    language.charAt(0).toUpperCase() + language.slice(1).toLowerCase();
+
+  // Load items when filters change
   useEffect(() => {
     fetchItems();
-  }, [page, language, course, subject]);
+  }, [page, normalizedLanguage, course, subject]);
 
   const fetchItems = async () => {
     setIsLoading(true);
@@ -48,7 +53,7 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
 
     try {
       const params = new URLSearchParams({
-        language,
+        language: normalizedLanguage,
         course,
         topic: subject,
         page: page.toString(),
@@ -153,9 +158,7 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
               <p className="text-sm text-slate-600">
                 Showing <span className="font-semibold text-slate-900">{items.length}</span> of{' '}
                 <span className="font-semibold text-slate-900">{total}</span> materials
-                {totalPages > 1 && (
-                  <span> (Page {page} of {totalPages})</span>
-                )}
+                {totalPages > 1 && <span> (Page {page} of {totalPages})</span>}
               </p>
             </div>
 
@@ -213,9 +216,7 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
                       >
                         1
                       </button>
-                      {page > 3 && (
-                        <span className="px-2 text-slate-500">...</span>
-                      )}
+                      {page > 3 && <span className="px-2 text-slate-500">...</span>}
                     </>
                   )}
 
@@ -228,9 +229,7 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
                     </button>
                   )}
 
-                  <button
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-emerald-600 text-white font-semibold"
-                  >
+                  <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-emerald-600 text-white font-semibold">
                     {page}
                   </button>
 
@@ -245,9 +244,7 @@ export function StudyMaterialPage({ language, course, subject, onBack }: StudyMa
 
                   {page < totalPages - 1 && (
                     <>
-                      {page < totalPages - 2 && (
-                        <span className="px-2 text-slate-500">...</span>
-                      )}
+                      {page < totalPages - 2 && <span className="px-2 text-slate-500">...</span>}
                       <button
                         onClick={() => handlePageChange(totalPages)}
                         className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors font-medium"

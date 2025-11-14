@@ -129,7 +129,11 @@ export function Header({ onMaterialSelect }: HeaderProps) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {/* Study Material Dropdown */}
-            <div className="relative group">
+            <div 
+              className="relative group"
+              onMouseEnter={() => handleMouseEnter('study')}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
                 className="flex items-center text-gray-700 hover:text-blue-900 px-3 py-2 text-sm font-medium transition-colors duration-200"
                 onMouseEnter={() => handleMouseEnter('study')}
@@ -151,7 +155,7 @@ export function Header({ onMaterialSelect }: HeaderProps) {
                   <div
                     key={language}
                     className="relative group/sub px-4 py-2 hover:bg-gray-100"
-                    onMouseEnter={() => setActiveDropdown('study')} // keep open on hover
+                    onMouseEnter={() => handleMouseEnter('study')}
                     onMouseLeave={handleMouseLeave}
                   >
                     <div className="flex items-center justify-between">
@@ -166,6 +170,8 @@ export function Header({ onMaterialSelect }: HeaderProps) {
                           <div
                             key={`${language}-${course}`}
                             className="relative group/course px-4 py-2 hover:bg-gray-100"
+                            onMouseEnter={() => handleMouseEnter('study')}
+                            onMouseLeave={handleMouseLeave}
                           >
                             <div className="flex items-center justify-between">
                               <span>{course}</span>

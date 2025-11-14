@@ -1,0 +1,50 @@
+import React, { useEffect, useState } from "react";
+
+type TestimonialsProps = {
+  testimonials: {
+    id: number;
+    name: string;
+    message: string;
+    role?: string;
+    image?: string;
+  }[];
+};
+
+export function Testimonials({ testimonials }: TestimonialsProps) {
+  return (
+    <section className="py-16 bg-gray-100 dark:bg-gray-900">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-center text-3xl font-bold mb-10 text-gray-900 dark:text-white">
+          What Our Students Say
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6"
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-14 h-14 rounded-full object-cover"
+                />
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {item.name}
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{item.role}</p>
+                </div>
+              </div>
+
+              <p className="mt-4 text-gray-700 dark:text-gray-300 italic">
+                “{item.message}”
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

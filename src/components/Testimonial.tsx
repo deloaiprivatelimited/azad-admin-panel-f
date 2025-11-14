@@ -1,0 +1,110 @@
+import React from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+type TestimonialItem = {
+  id: number;
+  name: string;
+  message: string;
+  role?: string;
+  image?: string;
+};
+
+type TestimonialProps = {
+  testimonials: TestimonialItem[];
+};
+
+// Custom arrow components with icons
+function NextArrow(props: any) {
+  const { onClick } = props;
+  return (
+    <div
+      className="absolute top-1/2 -right-6 transform -translate-y-1/2 z-10 cursor-pointer text-gray-800 dark:text-white"
+      onClick={onClick}
+    >
+      <ChevronRight size={32} />
+    </div>
+  );
+}
+
+function PrevArrow(props: any) {
+  const { onClick } = props;
+  return (
+    <div
+      className="absolute top-1/2 -left-6 transform -translate-y-1/2 z-10 cursor-pointer text-gray-800 dark:text-white"
+      onClick={onClick}
+    >
+      <ChevronLeft size={32} />
+    </div>
+  );
+}
+
+export function Testimonial({ testimonials }: TestimonialProps) {
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    responsive: [
+      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 640, settings: { slidesToShow: 1 } },
+    ],
+  };
+
+  return (
+    <section className="py-16 bg-gray-100 dark:bg-gray-900 relative">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-center text-3xl font-bold mb-10 text-gray-900 dark:text-white">
+          What Our Students Say
+        </h2>
+
+        <Slider {...settings} className="gap-4">
+          {testimonials.map((item) => (
+            <div key={item.id} className="px-2">
+              <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 h-full">
+                
+                {/* IMAGE ON TOP */}
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-24 h-24 rounded-full object-cover mb-4"
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-bold text-2xl mb-4">
+                    {item.name[0]}
+                  </div>
+                )}
+
+                {/* NAME */}
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {item.name}
+                </h4>
+
+                {/* ROLE */}
+                {item.role && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                    {item.role}
+                  </p>
+                )}
+
+                {/* MESSAGE */}
+                <p className="text-gray-700 dark:text-gray-300 italic">
+                  “{item.message}”
+                </p>
+              </div>
+            </div>
+          ))}
+        </Slider>
+      </div>
+    </section>
+  );
+}
