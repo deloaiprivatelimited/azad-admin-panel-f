@@ -1,8 +1,9 @@
 // App.tsx
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-
+import GalleryPage from "./components/Gallery";
 import { Header } from "./components/Header";
+import GallerySectionsAuto from "./components/gallerysec";
 import { Hero } from "./components/Hero";
 import { FacultyShowcase } from "./components/Testimonials";
 import { About } from "./components/About";
@@ -102,7 +103,7 @@ function AppRoutes() {
   /* ----------------- FETCH TESTIMONIALS ----------------- */
   useEffect(() => {
     setLoadingTestimonials(true);
-    fetch("http://localhost:5000/testimonials")
+    fetch("https://api.srinivasiasacademy.in/testimonials")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setTestimonialsList(data);
@@ -165,6 +166,9 @@ function AppRoutes() {
                       <Testimonial testimonials={testimonialsList} />
                     )}
                   </section>
+                  <section id="gallery">
+                    <GallerySectionsAuto/>
+                  </section>
 
                   <section id="founder">
                     <FounderMessage />
@@ -186,7 +190,7 @@ function AppRoutes() {
             <Route path="/current-affairs" element={<CurrentAffairsListPage />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/pdf" element={<PDFViewer />} />
-
+            <Route path="/gallery" element={<GalleryPage />} />
             {/* ----------------- STUDY MATERIAL ROUTE ----------------- */}
             <Route
               path="/study-material"

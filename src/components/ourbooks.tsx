@@ -26,7 +26,7 @@ export function BooksPage() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await fetch('http://localhost:5000/books/items');
+        const response = await fetch('https://api.srinivasiasacademy.in/books/items');
         if (!response.ok) throw new Error('Failed to fetch books');
 
         const data: ApiResponse = await response.json();

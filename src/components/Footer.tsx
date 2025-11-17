@@ -12,7 +12,7 @@ export function Footer() {
   const [social, setSocial] = useState<SocialLinks>({});
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/footer/footer-settings")
+    fetch("https://api.srinivasiasacademy.in/api/footer/footer-settings")
       .then((res) => res.json())
       .then((data) => setSocial(data))
       .catch((err) => console.error("Error loading footer settings:", err));

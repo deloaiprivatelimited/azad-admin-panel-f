@@ -41,7 +41,7 @@ export function Testimonial() {
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/testimonials")
+    fetch("https://api.srinivasiasacademy.in/testimonials")
       .then((res) => res.json())
       .then((data) => {
         setTestimonials(data.testimonials || []);
